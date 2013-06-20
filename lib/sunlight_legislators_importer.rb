@@ -1,38 +1,21 @@
 require 'csv'
 require_relative '../app/models/legislator'
 
-module CleanDataFields
-  def self.remove_unwanted_fields(hash_to_clean)
-    hash_to_clean.delete_if { |key, value| unwanted_fields.include?(key) }
-  end
-
-  def self.unwanted_fields
-    [ :nickname,
-      :district, 
-      :congress_office, 
-      :bioguide_id, 
-      :votesmart_id, 
-      :fec_id, 
-      :govtrack_id,
-      :crp_id, 
-      :official_rss, 
-      :senate_class, 
-      :congresspedia_url, 
-      :youtube_url,
-      :facebook_id]
-  end
-end
-
 class SunlightLegislatorsImporter
   def self.import(filename)
     csv = CSV.new(File.open(filename), :headers => true)
     csv.each do |row|
       attributes = Hash.new
       row.each do |field, value|
-        attributes.merge!( { field.to_sym => value } )
-        # raise NotImplementedError, "TODO: figure out what to do with this row and do it!"
+        if Legislator.column_names.include?(field)
+          attributes.merge!( { field.to_sym => value } )
+        else
+          begin
+          raise NotImplementedError "The Legislator class doesn't have this field."
+          rescue
+          end
+        end
       end
-      attributes = CleanDataFields.remove_unwanted_fields(attributes)
       Legislator.create(attributes)
     end
   end
