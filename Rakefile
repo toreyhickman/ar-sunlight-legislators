@@ -1,6 +1,15 @@
 require 'rake'
 require 'rspec/core/rake_task'
 require_relative 'db/config'
+require_relative 'lib/sunlight_legislators_importer'
+require_relative 'app/models/legislator'
+
+
+desc "populate the test database with sample data"
+task "db:populate" do
+  csv_file = File.dirname(__FILE__) + '/db/data/legislators.csv'
+  SunlightLegislatorsImporter.import(csv_file)
+end
 
 
 desc "create the database"
