@@ -9,11 +9,6 @@ class SunlightLegislatorsImporter
       row.each do |field, value|
         if Legislator.column_names.include?(field)
           attributes.merge!( { field.to_sym => value } )
-        else
-          begin
-          raise NotImplementedError "The Legislator class doesn't have this field."
-          rescue
-          end
         end
       end
       Legislator.create(attributes)
